@@ -6,7 +6,7 @@ class Tile
     CLEAR_CHAR = "\u2588".colorize(:light_black)
 
     def initialize(value)
-        @value = (value == "mine") ? MINE_CHAR : value
+        @value = (value == "mine") ? MINE_CHAR : (value == "clear") ? CLEAR_CHAR : value
         @face = "\u2588"
         @flagged = false
     end

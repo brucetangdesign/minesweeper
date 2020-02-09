@@ -7,12 +7,12 @@ class Board
     def initialize(grid_size, num_mines = 10)
         @grid = []
         mine_positions = set_mine_positions(grid_size, num_mines)
-        #mine_neighbors = get_mine_neighbors(mine_positions, grid_size)
+        mine_neighbors = get_mine_neighbors(mine_positions, grid_size)
 
         (0...grid_size).each do |i|
             @grid << []
             (0...grid_size).each do |j|
-                val = mine_positions.include?([i,j]) ? "mine" : "clear"
+                val = mine_positions.include?([i,j]) ? "mine" : mine_neighbors.has_key?([i,j]) ? mine_neighbors[[i,j]] : "clear"
                 @grid[i] << Tile.new(val)
             end
         end
@@ -34,13 +34,27 @@ class Board
         mine_positions
     end
 
-    
+    def get_mine_neighbors(mine_positions, grid_size)
+        mine_neighbors = Hash.new(0)
+        
+        mine_positions.each_with_index do |pos,ind|
+            (-1..1).each do |row|
+                (-1..1).each do |col|
+                    neighbor = [pos[0]-row, pos[1]-col]
+                    next if !neighbor.all? {|pos| pos >= 0 && pos < grid_size}
+                    mine_neighbors[neighbor] += 1 if !mine_positions.include?(neighbor)
+                end
+            end
+        end
+        mine_neighbors
+    end
+
 
     def render
         puts "  #{[*0...@grid.count].join(" ")}"
 
         (0...@grid.count).each do |i|
-            row = @grid[i].map {|tile| tile.face}.join(" ")
+            row = @grid[i].map {|tile| tile.value}.join(" ")
             puts "#{i} #{row}"
         end
     end
