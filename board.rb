@@ -66,40 +66,56 @@ class Board
         selected_tile.reveal(true)
         if !selected_tile.valid_tile
             reveal_mines(pos)
-            render
-            return
+            return false
         end
 
         #reveal row
-        reveal_row(pos)
+        reveal_neighbors(pos)
 
-        render
+        true
+    end
+
+    def reveal_neighbors(pos)
+        row,col = pos
+        start_row = 0
+        end_row = @grid.length - 1
+
+        if col_has_mines?(col)
+            start_row = closest_left_mine_pos(@grid.transpose,pos.reverse) + 1;
+            end_row = closest_right_mine_pos(@grid.transpose,pos.reverse) - 1;
+        end
+
+        (start_row..end_row).each do |new_row|
+            #next if pos == [new_row,col]
+            reveal_row([new_row,col])
+        end
+
     end
 
     def reveal_row(pos)
-        row,col  = pos
+        row,col = pos
         grid_size = @grid.count
         start_col = 0
         end_col = grid_size-1
 
         if row_has_mines?(row)
-            start_col = closest_left_mine_pos(pos) + 1;
-            end_col = closest_right_mine_pos(pos) - 1;
+            start_col = closest_left_mine_pos(@grid,pos) + 1;
+            end_col = closest_right_mine_pos(@grid,pos) - 1;
         end
 
         (start_col..end_col).each do |new_col|
-            next if col == new_col
+            #next if pos == [row,new_col]
             new_tile = @grid[row][new_col]
             new_tile.reveal
         end
     end
 
-    def closest_left_mine_pos(pos)
-        row,col= pos
+    def closest_left_mine_pos(grid,pos)
+        row,col = pos
 
         if col > 0
             (col-1).downto(0).each do |new_col|
-                new_tile = @grid[row][new_col]
+                new_tile = grid[row][new_col]
                 return new_col if !new_tile.valid_tile
             end
         end
@@ -107,13 +123,13 @@ class Board
         return -1
     end
 
-    def closest_right_mine_pos(pos)
-        row,col= pos
-        grid_size = @grid.count
+    def closest_right_mine_pos(grid,pos)
+        row,col = pos
+        grid_size = grid.count
 
         if col < @grid.count-1
             ((col+1)...grid_size).each do |new_col|
-                new_tile = @grid[row][new_col]
+                new_tile = grid[row][new_col]
                 return new_col if !new_tile.valid_tile
             end
         end
@@ -125,11 +141,16 @@ class Board
         @mine_positions.any? {|pos| pos[0] == (row)}
     end
 
+    def col_has_mines?(col)
+        @mine_positions.any? {|pos| pos[1] == (col)}
+    end
+
     def reveal_mines(selected_pos)
         @mine_positions.each { |pos| @grid[pos[0]][pos[1]].reveal if pos != selected_pos }
     end
 end
 
 b = Board.new(9)
-b.render
 b.reveal([3,4])
+#b.reveal_mines([3,4])
+b.render

@@ -3,7 +3,7 @@ require "colorize"
 class Tile
     attr_reader :value, :face, :flagged
     MINE_CHAR = "\u2297"
-    CLEAR_CHAR = "\u2588".colorize(:light_black)
+    CLEAR_CHAR = "\u2588".colorize(:green)
     DEFAULT_FACE = "\u2588"
 
     def initialize(value)
@@ -34,7 +34,7 @@ class Tile
         when "clear"
         @face = CLEAR_CHAR
         else
-        @face = @value
+        @face = @value.to_s.colorize(:green)
         end
 
         return @value
