@@ -22,6 +22,10 @@ class Tile
         @flagged = false
     end
 
+    def valid_tile
+        @value != "mine"
+    end
+
     def reveal(current_selection = false)
         case @value
         when "mine"
