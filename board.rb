@@ -6,7 +6,7 @@ class Board
 
     def initialize(grid_size, num_mines = 10)
         @grid = []
-        @mine_positions = get_mine_positions(grid_size, num_mines)
+        @mine_positions = [[0,3],[0,5],[0,8],[1,5],[4,6],[4,8],[5,4],[6,6],[8,2],[8,8]]#get_mine_positions(grid_size, num_mines)# to test
         mine_neighbors = get_mine_neighbors(@mine_positions, grid_size)
 
         (0...grid_size).each do |i|
@@ -70,67 +70,59 @@ class Board
         end
 
         #reveal row
-        reveal_neighbors(pos)
-
+        reveal_neighbors(pos) if !selected_tile.value.is_a? Integer
+#reveal_row(pos) if !selected_tile.value.is_a? Integer
+        #@grid[3][5].reveal
         true
     end
 
     def reveal_neighbors(pos)
         row,col = pos
-        start_row = 0
-        end_row = @grid.length - 1
+        start_row = closest_left_marked_pos(@grid.transpose,pos.reverse);
+        end_row = closest_right_marked_pos(@grid.transpose,pos.reverse);
 
-        if col_has_mines?(col)
-            start_row = closest_left_mine_pos(@grid.transpose,pos.reverse) + 1;
-            end_row = closest_right_mine_pos(@grid.transpose,pos.reverse) - 1;
-        end
-
-        (start_row..end_row).each do |new_row|
-            #next if pos == [new_row,col]
-            reveal_row([new_row,col])
-        end
-
+        (start_row..end_row).each { |new_row| reveal_row([new_row,col]) }
     end
 
     def reveal_row(pos)
         row,col = pos
         grid_size = @grid.count
-        start_col = 0
-        end_col = grid_size-1
+        selected_tile = @grid[row][col]
+        selected_tile.reveal if selected_tile.valid_tile
 
-        if row_has_mines?(row)
-            start_col = closest_left_mine_pos(@grid,pos) + 1;
-            end_col = closest_right_mine_pos(@grid,pos) - 1;
-        end
+        if !selected_tile.value.is_a? Integer
+            start_col = closest_left_marked_pos(@grid,pos);
+            end_col = closest_right_marked_pos(@grid,pos);
 
-        (start_col..end_col).each do |new_col|
-            #next if pos == [row,new_col]
-            new_tile = @grid[row][new_col]
-            new_tile.reveal
+            (start_col..end_col).each do |new_col|
+
+                new_tile = @grid[row][new_col]
+                new_tile.reveal
+            end
         end
     end
 
-    def closest_left_mine_pos(grid,pos)
+    def closest_left_marked_pos(grid,pos)
         row,col = pos
 
         if col > 0
             (col-1).downto(0).each do |new_col|
                 new_tile = grid[row][new_col]
-                return new_col if !new_tile.valid_tile
+                return new_col if (!new_tile.valid_tile) || (new_tile.value.is_a? Integer)
             end
         end
 
-        return -1
+        return 0
     end
 
-    def closest_right_mine_pos(grid,pos)
+    def closest_right_marked_pos(grid,pos)
         row,col = pos
         grid_size = grid.count
 
         if col < @grid.count-1
             ((col+1)...grid_size).each do |new_col|
                 new_tile = grid[row][new_col]
-                return new_col if !new_tile.valid_tile
+                return new_col if (!new_tile.valid_tile) || (new_tile.value.is_a? Integer)
             end
         end
 
@@ -151,6 +143,6 @@ class Board
 end
 
 b = Board.new(9)
-b.reveal([3,4])
-#b.reveal_mines([3,4])
+b.reveal([0,0])
+b.reveal_mines([4,4])
 b.render
