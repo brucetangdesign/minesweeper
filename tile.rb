@@ -2,12 +2,12 @@ require "colorize"
 
 class Tile
     attr_reader :value, :face, :flagged
-    MINE_CHAR = "\u2297".colorize(:red)
+    MINE_CHAR = "\u2297"
     CLEAR_CHAR = "\u2588".colorize(:light_black)
     DEFAULT_FACE = "\u2588"
 
     def initialize(value)
-        @value = (value == "mine") ? MINE_CHAR : (value == "clear") ? CLEAR_CHAR : value
+        @value = value
         @face = DEFAULT_FACE
         @flagged = false
     end
@@ -22,7 +22,17 @@ class Tile
         @flagged = false
     end
 
-    def reveal
+    def reveal(current_selection = false)
+        case @value
+        when "mine"
+        @face = MINE_CHAR.colorize(:red)
+        @face = MINE_CHAR.colorize(:color => :black, :background => :red) if current_selection && @value == "mine"
+        when "clear"
+        @face = CLEAR_CHAR
+        else
         @face = @value
+        end
+
+        return @value
     end
 end

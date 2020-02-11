@@ -6,13 +6,13 @@ class Board
 
     def initialize(grid_size, num_mines = 10)
         @grid = []
-        mine_positions = get_mine_positions(grid_size, num_mines)
-        mine_neighbors = get_mine_neighbors(mine_positions, grid_size)
+        @mine_positions = get_mine_positions(grid_size, num_mines)
+        mine_neighbors = get_mine_neighbors(@mine_positions, grid_size)
 
         (0...grid_size).each do |i|
             @grid << []
             (0...grid_size).each do |j|
-                val = mine_positions.include?([i,j]) ? "mine" : mine_neighbors.has_key?([i,j]) ? mine_neighbors[[i,j]] : "clear"
+                val = @mine_positions.include?([i,j]) ? "mine" : mine_neighbors.has_key?([i,j]) ? mine_neighbors[[i,j]] : "clear"
                 @grid[i] << Tile.new(val)
             end
         end
@@ -60,9 +60,30 @@ class Board
     end
 
     def reveal(pos)
+        row,col = pos
+        selected_tile = @grid[row][col]
+        #reveal selected 
+        
+        if selected_tile.reveal(true) == "mine"
+            reveal_mines(pos)
+            render
+            return
+        end
 
+        #reveal row
+        reveal_row(pos)
+
+        render
+    end
+
+    def reveal_row(pos)
+    end
+
+    def reveal_mines(selected_pos)
+        @mine_positions.each { |pos| @grid[pos[0]][pos[1]].reveal if pos != selected_pos }
     end
 end
 
 b = Board.new(9)
 b.render
+b.reveal([3,4])
