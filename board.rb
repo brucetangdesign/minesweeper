@@ -6,7 +6,7 @@ class Board
 
     def initialize(grid_size, num_mines = 10)
         @grid = []
-        mine_positions = set_mine_positions(grid_size, num_mines)
+        mine_positions = get_mine_positions(grid_size, num_mines)
         mine_neighbors = get_mine_neighbors(mine_positions, grid_size)
 
         (0...grid_size).each do |i|
@@ -18,7 +18,7 @@ class Board
         end
     end
 
-    def set_mine_positions(grid_size, num_mines)
+    def get_mine_positions(grid_size, num_mines)
         possible_positions = []
         mine_positions = []
         # store all possible positions
@@ -54,9 +54,13 @@ class Board
         puts "  #{[*0...@grid.count].join(" ")}"
 
         (0...@grid.count).each do |i|
-            row = @grid[i].map {|tile| tile.value}.join(" ")
+            row = @grid[i].map {|tile| tile.face}.join(" ")
             puts "#{i} #{row}"
         end
+    end
+
+    def reveal(pos)
+
     end
 end
 
