@@ -156,4 +156,21 @@ class Board
 
         true
     end
+
+    def any_mines_revealed?
+        @mine_positions.each do |pos|
+            tile = @grid[pos[0]][pos[1]]
+            return true if tile.revealed? && !tile.valid_tile
+        end
+
+        false
+    end
+
+    # delete this method
+    def clear
+        @grid.each do |row|
+            clear_tiles = row.select { |tile| tile.valid_tile }
+            clear_tiles.each {|tile| tile.reveal}
+        end
+    end
 end
