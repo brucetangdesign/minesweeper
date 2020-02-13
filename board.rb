@@ -150,7 +150,7 @@ class Board
         @mine_positions.any? {|pos| pos[1] == (col)}
     end
 
-    def reveal_mines(selected_pos)
+    def reveal_mines(selected_pos=nil)
         @mine_positions.each { |pos| @grid[pos[0]][pos[1]].reveal if pos != selected_pos }
     end
 
