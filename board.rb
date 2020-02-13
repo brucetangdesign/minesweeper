@@ -172,7 +172,7 @@ class Board
         false
     end
 
-    # delete this method
+    # used to cheat
     def clear
         @grid.each do |row|
             clear_tiles = row.select { |tile| tile.valid_tile }
