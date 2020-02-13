@@ -58,6 +58,12 @@ class Board
         end
     end
 
+    def valid_pos?(pos)
+        row,col = pos
+        return false if row < 0 || row > @grid.length-1 || col < 0 || col > @grid.length-1
+        true
+    end
+
     def reveal(pos)
         row,col = pos
         selected_tile = @grid[row][col]
