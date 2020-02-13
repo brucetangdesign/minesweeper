@@ -49,7 +49,6 @@ class Board
         mine_neighbors
     end
 
-
     def render
         puts "  #{[*0...@grid.count].join(" ")}"
 
@@ -73,6 +72,15 @@ class Board
         reveal_neighbors(pos) if !selected_tile.value.is_a? Integer
 
         true
+    end
+
+    def flag(pos)
+        row,col = pos
+        selected_tile = @grid[row][col]
+
+        if !selected_tile.revealed?
+            selected_tile.flag    
+        end
     end
 
     def reveal_neighbors(pos)

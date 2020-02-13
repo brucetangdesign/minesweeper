@@ -5,25 +5,26 @@ class Tile
     MINE_CHAR = "\u2297"
     CLEAR_CHAR = "\u2588".colorize(:light_black)
     DEFAULT_FACE = "\u2588"
+    FLAG_CHAR = "\u224B".colorize(:color => :magenta, :background => :white)
 
     def initialize(value)
         @value = value
         @face = DEFAULT_FACE
         @flagged = false
+        @revealed = false
     end
 
-    def flag(show_flag = true)
-        @face = "\u224B"
-        @flagged = true
-    end
-
-    def unflag
-        @face = DEFAULT_FACE
-        @flagged = false
+    def flag
+        @face = !@flagged ? FLAG_CHAR : DEFAULT_FACE
+        @flagged = !@flagged 
     end
 
     def valid_tile
         @value != "mine"
+    end
+
+    def revealed?
+        @revealed
     end
 
     def reveal(current_selection = false)
@@ -44,6 +45,8 @@ class Tile
                 @face = val_str.colorize(:red)
             end
         end
+
+        @revealed = true
 
         return @value
     end
